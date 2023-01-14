@@ -1,0 +1,107 @@
+
+
+@{
+    ViewData["Title"] = "Sale Product";
+}
+<style>
+    img{
+        height:100px;
+        width:100px;
+    }
+</style>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            @foreach(var category in ViewBag.Category as List<Category>)
+{
+                    <a href="#" onclick="getProduct('@category.CategoryId');" class="btn btn-primary">@category.CategoryName</a>
+}
+        </div>
+        <div class="col-4">
+            @foreach(var tab in ViewBag.Tables as List<Tables>)
+{
+                    <a href="#" class="btn btn-primary">@tab.TableNumber</a>
+}
+        </div>
+        <div class="col-4">
+            <div class="form-group">
+                <select type="text" id="CustomerId" name="CustomerId"
+                       class="form-control" asp-items="@ViewBag.Customer"></select>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-6">
+       <div id="sList"></div>
+    </div>
+    <div class="col-6">
+        <table class="table table-bordered" id="SaleList">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4"></div>
+        <div class="col-4">
+            <div class="form-group">
+                <label for="Total" class="form-label">Total</label>
+                <input readonly id="Total" value="0" name="Total" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="Discount" class="form-label">Discount</label>
+                <input id="Discount" value="0" name="Discount" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="VAT" class="form-label">VAT</label>
+                <input id="VAT" value="0" name="VAT" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="GrandTotal" class="form-label">Grand Total</label>
+                <input id="GrandTotal" value="0" name="GrandTotal" class="form-control" />
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            
+        });
+        function getProduct(Id) {
+            $.ajax({
+                method: "GET",
+                url: "/Sale/GetProductByCategory/?Id=" + Id,
+                contentType: "application/json",
+                success: function (data) {
+                    $.each(data, function (i, v) {
+                        var product = "<div class='card'><div class='card-body'>";
+                        product += "<h5 class='card-title'>" + v.productName + "</h5>";
+                        product += "<img src='/Uploads/" + v.image + "'/>";
+                        product += "<h5>"+ v.price +"</h5></div></div>";
+                        $("#sList").append(product);
+                    });
+                }, error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+}
